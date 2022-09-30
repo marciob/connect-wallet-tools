@@ -20,6 +20,10 @@ function Form() {
     setUri(ipfs.toString());
   }
 
+  function updateOnChange(event) {
+    console.log("values from onChange ", event.target.value);
+  }
+
   const { config } = usePrepareContractWrite({
     addressOrName: "0xcf5c9BAb07D7F63847348F4B4e06F2e7bdcAB240",
     contractInterface: abi,
@@ -54,9 +58,13 @@ function Form() {
             </p>
           </div>
           <div className="lg:w-1/2 md:w-2/3 mx-auto">
-            <form onSubmit={handleSubmit(onSubmitForm)}>
+            {/* form */}
+            <form
+              onSubmit={handleSubmit(onSubmitForm)}
+              onChange={updateOnChange}
+            >
               <div className="m-2">
-                {/* name field */}
+                {/* price field */}
                 <div className="p-2 w-1/2 flex mx-auto">
                   <div className="mx-auto text-center">
                     <label
@@ -77,7 +85,7 @@ function Form() {
                     />
                   </div>
                 </div>
-                {/* email field */}
+                {/* ipfs field */}
                 <div className="p-2 w-1/2 flex mx-auto">
                   <div className="mx-auto text-center">
                     <label
