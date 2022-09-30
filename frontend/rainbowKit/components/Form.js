@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { useAccount, useContract, useProvider, erc721ABI } from "wagmi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import abi from "../constants/contractABI";
 import { ethers } from "ethers";
 
 function Form() {
-  const { register, handleSubmit, errors, reset } = useForm();
-
   let { address } = useAccount();
 
   const [price, setPrice] = useState(0.001);
   const [uri, setUri] = useState("");
+
+  const [inputData, setInputData] = useState({
+    price: 0.001,
+    ipfs: "",
+  });
 
   function onSubmitForm(values) {
     const { price, ipfs } = values;
@@ -22,6 +24,20 @@ function Form() {
 
   function updateOnChange(event) {
     console.log("values from onChange ", event.target.value);
+
+    const { price, ipfs } = event.target.value;
+  }
+
+  function handleInputPrice(e) {
+    e.preventDefault();
+    console.log("handleInputPrice being called ", e.target.value);
+    setPrice(e.target.value);
+  }
+
+  function handleInputIpfs(e) {
+    e.preventDefault();
+    console.log("handleInputIpfs being called ", e.target.value);
+    setUri(e.target.value);
   }
 
   const { config } = usePrepareContractWrite({
@@ -59,10 +75,7 @@ function Form() {
           </div>
           <div className="lg:w-1/2 md:w-2/3 mx-auto">
             {/* form */}
-            <form
-              onSubmit={handleSubmit(onSubmitForm)}
-              onChange={updateOnChange}
-            >
+            <form>
               <div className="m-2">
                 {/* price field */}
                 <div className="p-2 w-1/2 flex mx-auto">
@@ -78,9 +91,7 @@ function Form() {
                       step="any"
                       id="price"
                       name="price"
-                      {...register("price", {
-                        required: "Required",
-                      })}
+                      onBlur={handleInputPrice}
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     />
                   </div>
@@ -98,10 +109,7 @@ function Form() {
                       type="text"
                       id="ipfs"
                       name="ipfs"
-                      {...register("ipfs", {
-                        required: "Required",
-                        message: "testing",
-                      })}
+                      onChange={handleInputIpfs}
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     />
                   </div>
@@ -109,14 +117,15 @@ function Form() {
                 {/* button field */}
                 <div className="p-2 w-full">
                   <button
-                    onClick={() => {
-                      console.log(
-                        "onclick safemint clicked. current state price :",
-                        price
-                      );
-                      var value = document.getElementsByName("price")[0].value;
-                      console.log("validation ", value);
-                      safeMint?.();
+                    onClick={(e) => {
+                      console.log("onclick button clicked ");
+                      e.preventDefault();
+
+                      try {
+                        safeMint?.();
+                      } catch (error) {
+                        console.log(error);
+                      }
                     }}
                     className="flex mx-auto text-white bg-blue-500 border-0 py-2 px-8 focus:outline-none border-blue-600 rounded text-lg"
                   >
