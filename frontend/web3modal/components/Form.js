@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useAccount, useContract, useProvider, erc721ABI } from "wagmi";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import abi from "../constants/contractABI";
 import { ethers } from "ethers";
 
 function Form() {
-  let { address } = useAccount();
-
   const [price, setPrice] = useState(0.001);
   const [uri, setUri] = useState("");
-
-  const [inputData, setInputData] = useState({
-    price: 0.001,
-    ipfs: "",
-  });
 
   function onSubmitForm(values) {
     const { price, ipfs } = values;
@@ -40,25 +31,6 @@ function Form() {
     setUri(e.target.value);
   }
 
-  const { config } = usePrepareContractWrite({
-    addressOrName: "0xcf5c9BAb07D7F63847348F4B4e06F2e7bdcAB240",
-    contractInterface: abi,
-    functionName: "safeMint",
-    args: ["0x95a548A77f41d64f5F0d6905f8F9CD3aeFe972A9", uri], //change it later, not hard coded address
-    chainId: 5,
-    overrides: {
-      from: "0x95a548A77f41d64f5F0d6905f8F9CD3aeFe972A9", //change it later, not hard coded address
-      value: ethers.utils.parseEther(price.toString()),
-    },
-  });
-
-  const {
-    write: safeMint,
-    data,
-    isLoading,
-    isSuccess,
-  } = useContractWrite(config);
-
   return (
     <div>
       <section className="text-gray-600 body-font relative">
@@ -69,8 +41,6 @@ function Form() {
             </h1>
             <p className="lg:w-2/3 mx-auto leading-relaxed text-base">
               Place your NFT price and metadata address (only CID).
-              {isLoading && <div>Check Wallet</div>}
-              {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
             </p>
           </div>
           <div className="lg:w-1/2 md:w-2/3 mx-auto">
@@ -118,14 +88,8 @@ function Form() {
                 <div className="p-2 w-full">
                   <button
                     onClick={(e) => {
-                      console.log("onclick button clicked ");
                       e.preventDefault();
-
-                      try {
-                        safeMint?.();
-                      } catch (error) {
-                        console.log(error);
-                      }
+                      console.log("onclick button clicked ");
                     }}
                     className="flex mx-auto text-white bg-blue-500 border-0 py-2 px-8 focus:outline-none border-blue-600 rounded text-lg"
                   >
@@ -144,7 +108,3 @@ function Form() {
 }
 
 export default Form;
-
-//to do:
-//handling input form errors
-//not harding code address
